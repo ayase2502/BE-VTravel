@@ -13,7 +13,7 @@ class UserController extends Controller
             'fullname' => 'required|string|max:50',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'sdt' => 'required|string|unique:users,sdt,' . $user->id,
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         if($request->hasFile('avatar')){
