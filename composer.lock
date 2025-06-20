@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "015e02e23a490fcf9d86230851cba120",
+    "content-hash": "fdd9040852712d2bc96f8c23963ffff9",
     "packages": [
         {
             "name": "brick/math",
@@ -6036,6 +6036,145 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.1"
             },
             "time": "2025-04-30T06:54:44+00:00"
+        },
+        {
+            "name": "kitloong/laravel-migrations-generator",
+            "version": "v7.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kitloong/laravel-migrations-generator.git",
+                "reference": "e46bdbe9308c211fd896cdc834b28d6b9f0dce3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kitloong/laravel-migrations-generator/zipball/e46bdbe9308c211fd896cdc834b28d6b9f0dce3f",
+                "reference": "e46bdbe9308c211fd896cdc834b28d6b9f0dce3f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "illuminate/support": "^11.0|^12.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "barryvdh/laravel-ide-helper": "^3.0",
+                "friendsofphp/php-cs-fixer": "^3.1",
+                "larastan/larastan": "^2.0|^3.0",
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^9.0|^10.0",
+                "phpmd/phpmd": "^2.10",
+                "phpstan/phpstan-mockery": "^1.0|^2.0",
+                "slevomat/coding-standard": "^8.0",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "KitLoong\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "KitLoong\\MigrationsGenerator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kit Loong",
+                    "email": "kitloong1008@gmail.com"
+                }
+            ],
+            "description": "Generates Laravel Migrations from an existing database",
+            "keywords": [
+                "artisan",
+                "generator",
+                "laravel",
+                "lumen",
+                "migration",
+                "migrations"
+            ],
+            "support": {
+                "issues": "https://github.com/kitloong/laravel-migrations-generator/issues",
+                "source": "https://github.com/kitloong/laravel-migrations-generator/tree/v7.1.2"
+            },
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/kitloong",
+                    "type": "buy_me_a_coffee"
+                },
+                {
+                    "url": "https://github.com/kitloong",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-27T12:06:46+00:00"
+        },
+        {
+            "name": "laravel/breeze",
+            "version": "v2.3.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/breeze.git",
+                "reference": "73149b5d84be3881b2fdda94b2ad289e7905c1a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/breeze/zipball/73149b5d84be3881b2fdda94b2ad289e7905c1a4",
+                "reference": "73149b5d84be3881b2fdda94b2ad289e7905c1a4",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^11.0|^12.0",
+                "illuminate/filesystem": "^11.0|^12.0",
+                "illuminate/support": "^11.0|^12.0",
+                "illuminate/validation": "^11.0|^12.0",
+                "php": "^8.2.0",
+                "symfony/console": "^7.0"
+            },
+            "require-dev": {
+                "laravel/framework": "^11.0|^12.0",
+                "orchestra/testbench-core": "^9.0|^10.0",
+                "phpstan/phpstan": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Breeze\\BreezeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Breeze\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Minimal Laravel authentication scaffolding with Blade and Tailwind.",
+            "keywords": [
+                "auth",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/breeze/issues",
+                "source": "https://github.com/laravel/breeze"
+            },
+            "time": "2025-06-17T13:07:20+00:00"
         },
         {
             "name": "laravel/pail",
