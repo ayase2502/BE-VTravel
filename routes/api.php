@@ -23,7 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/tours/{id}', [TourController::class,'update']);
     Route::delete('/tours/{id}', [TourController::class,'destroy']);
 
-    Route::apiResource('categories', TourCategoryController::class)->only(['index', 'show']);
+    Route::apiResource('categories', TourCategoryController::class);
+
 
     Route::apiResource('albums', AlbumController::class)->only(['index', 'show']);
 });

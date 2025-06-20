@@ -21,7 +21,6 @@ class TourController extends Controller
     {
        $request->validate([
         'category_id' => 'required|exists:tour_categories,category_id',
-        'album_id' => 'required|exists:albums,album_id',
         'tour_name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'itinerary' => 'nullable|string',
@@ -30,20 +29,22 @@ class TourController extends Controller
         'destination' => 'nullable|string',
         'duration' => 'nullable|string',
         'status' => 'in:visible,hidden',
-        'image' => 'nullable|image',
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', 
-        'captions' => 'nullable|array',
+        'image' => 'required|image', // ảnh đại diện tour
+        'images.*' => 'nullable|image|max:2048', // ảnh thêm cho album
     ]);
 
-    // Upload ảnh đại diện
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('tours', 'public');
-    }
+    // Bước 1: Tạo album mới
+    $album = Album::create([
+        'title' => 'Album cho tour ' . $request->tour_name,
+    ]);
 
+    // Bước 2: Lưu ảnh đại diện tour
+    $imagePath = $request->file('image')->store('tours', 'public');
+
+    // Bước 3: Tạo tour
     $tour = Tour::create([
         'category_id' => $request->category_id,
-        'album_id' => $request->album_id,
+        'album_id' => $album->album_id,
         'tour_name' => $request->tour_name,
         'description' => $request->description,
         'itinerary' => $request->itinerary,
@@ -55,14 +56,15 @@ class TourController extends Controller
         'image' => $imagePath,
     ]);
 
-    // Upload nhiều ảnh album (nếu có)
+    // Bước 4: Lưu các ảnh khác vào bảng album_images (nếu có)
     if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $index => $img) {
+        foreach ($request->file('images') as $img) {
             $path = $img->store('album_images', 'public');
+
             AlbumImage::create([
-                'album_id' => $request->album_id,
+                'album_id' => $album->album_id,
                 'image_url' => $path,
-                'caption' => $request->captions[$index] ?? null,
+                'caption' => null
             ]);
         }
     }
