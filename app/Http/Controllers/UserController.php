@@ -65,6 +65,7 @@ class UserController extends Controller
     // Cập nhật user
     public function update(Request $request, $id)
     {
+
         $user = User::find($id);
         if (!$user)
             return response()->json(['message' => 'Không tìm thấy user'], 404);
@@ -85,7 +86,15 @@ class UserController extends Controller
             $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
-        $user->fill($request->except(['password', 'avatar']));
+        // Cập nhật từng trường nếu có trong request
+        if ($request->filled('full_name'))
+            $user->full_name = $request->full_name;
+        if ($request->filled('email'))
+            $user->email = $request->email;
+        if ($request->filled('phone'))
+            $user->phone = $request->phone;
+        if ($request->filled('role'))
+            $user->role = $request->role;
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
