@@ -8,6 +8,7 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\UserController;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 
+// ------AUTH ------ 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->group(function () {
@@ -16,9 +17,16 @@ Route::post('/login', [AuthController::class, 'login']);
 //     Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
-Route::get('/users', [UserController::class, 'index']);
+// Route xác thực người dùng hiện tại (React sẽ dùng để kiểm tra đăng nhập)
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json(['user' => $request->user()]);
+});
+
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+
 Route::middleware('auth:sanctum')->group(function () {
-   
+    Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);
     Route::post('/update/{id}', [UserController::class, 'update']);

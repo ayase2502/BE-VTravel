@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -48,36 +49,36 @@ class AuthController extends Controller
             ->orWhere('phone', $request->login)
             ->first();
 
-        if (!$user) {
-            return response()->json(['message' => "Không tìm thấy người dùng"], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Thông tin đăng nhập không chính xác'], 401);
         }
 
+        if ($user->is_deleted === 'inactive') {
+            return response()->json(['message' => 'Tài khoản đã bị vô hiệu hóa'], 403);
+        }
 
-        // if (!Hash::check($request->password, $user->password)) {
-        //     return response()->json(['message' => "Sai mật khẩu"], 401); 
-        // }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+        Auth::login($user);
 
         return response()->json([
             'message' => 'Đăng nhập thành công',
-            'token' => $token,
             'user' => $user,
         ]);
     }
 
 
-
     // Đăng xuất
     public function logout(Request $request)
     {
-        $token = $request->user()->currentAccessToken();
+        $token = $request->user()?->currentAccessToken();
         if ($token) {
             $token->delete();
         }
 
         return response()->json([
-            'message' => 'Đăng xuất thành công!'
-        ]);
+            'message' => 'Đăng xuất thành công'
+        ])->withCookie(
+                cookie('token', '', -1)
+            );
     }
+
 }
