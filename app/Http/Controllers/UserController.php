@@ -22,7 +22,8 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        if (!$user) return response()->json(['message' => 'Không tìm thấy user'], 404);
+        if (!$user)
+            return response()->json(['message' => 'Không tìm thấy user'], 404);
         $this->authorize('view', $user);
 
         $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
@@ -65,7 +66,8 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::find($id);
-        if (!$user) return response()->json(['message' => 'Không tìm thấy user'], 404);
+        if (!$user)
+            return response()->json(['message' => 'Không tìm thấy user'], 404);
         $this->authorize('update', $user);
 
         $request->validate([
@@ -78,7 +80,8 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar) Storage::disk('public')->delete($user->avatar);
+            if ($user->avatar)
+                Storage::disk('public')->delete($user->avatar);
             $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
@@ -96,10 +99,12 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::find($id);
-        if (!$user) return response()->json(['message' => 'Không tìm thấy user'], 404);
+        if (!$user)
+            return response()->json(['message' => 'Không tìm thấy user'], 404);
         $this->authorize('delete', $user);
 
-        if ($user->avatar) Storage::disk('public')->delete($user->avatar);
+        if ($user->avatar)
+            Storage::disk('public')->delete($user->avatar);
         $user->delete();
 
         return response()->json(['message' => 'Xoá user thành công']);
@@ -135,9 +140,12 @@ class UserController extends Controller
         }
 
         // Cập nhật thông tin khác
-        if ($request->filled('full_name')) $user->full_name = $request->full_name;
-        if ($request->filled('phone')) $user->phone = $request->phone;
-        if ($request->filled('password')) $user->password = bcrypt($request->password);
+        if ($request->filled('full_name'))
+            $user->full_name = $request->full_name;
+        if ($request->filled('phone'))
+            $user->phone = $request->phone;
+        if ($request->filled('password'))
+            $user->password = bcrypt($request->password);
 
         $user->save();
 

@@ -18,20 +18,19 @@ Route::post('/login', [AuthController::class, 'login']);
 // });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('tours', [TourController::class,'store']);
-    Route::get('/tours', [TourController::class,'index']);
-    Route::get('/tours/{id}', [TourController::class,'show']);
-    Route::put('/tours/{id}', [TourController::class,'update']);
-    Route::delete('/tours/{id}', [TourController::class,'destroy']);
+    Route::post('tours', [TourController::class, 'store']);
+    Route::get('/tours', [TourController::class, 'index']);
+    Route::get('/tours/{id}', [TourController::class, 'show']);
+    Route::put('/tours/{id}', [TourController::class, 'update']);
+    Route::delete('/tours/{id}', [TourController::class, 'destroy']);
 
     Route::apiResource('categories', TourCategoryController::class);
 
-
     Route::apiResource('albums', AlbumController::class)->only(['index', 'show']);
 });
- Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
-   
+
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
