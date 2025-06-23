@@ -5,11 +5,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\TourCategoryController;
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\UserController;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 
 // ------AUTH ------ 
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/otp/send', [OtpController::class, 'sendOtp']);
+Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
 Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::get('/profile',[ProfileController::class,'profile']);

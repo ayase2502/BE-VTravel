@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->enum('role', ['customer', 'staff', 'admin'])->nullable()->default('customer');
             $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+            $table->boolean('is_verified')->default(false);
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
         });
