@@ -125,7 +125,6 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Xóa avatar cũ nếu có
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
