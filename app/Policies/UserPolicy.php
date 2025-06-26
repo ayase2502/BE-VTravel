@@ -7,11 +7,11 @@ use App\Models\User;
 class UserPolicy
 {
     /**
-     * Chỉ admin được xem danh sách user
+     * Tài khoản ADMIN và STAFF được xem danh sách user
      */
     public function viewAny(User $user): bool
     {
-        return $user->role === 'admin';
+        return in_array($user->role, ['admin', 'staff']);
     }
 
     /**
@@ -27,7 +27,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'admin';
+        return in_array($user->role, ['admin', 'staff']);
     }
 
     /**
@@ -43,6 +43,6 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->role === 'admin';
+        return in_array($user->role, ['admin', 'staff']);
     }
 }
