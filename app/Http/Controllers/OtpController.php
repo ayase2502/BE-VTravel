@@ -16,7 +16,6 @@ class OtpController extends Controller
 
     public function sendOtp(Request $request)
     {
-        $isAdmin = Auth::check();
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'method' => 'required|in:email,phone',

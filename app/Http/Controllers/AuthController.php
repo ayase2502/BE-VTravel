@@ -25,10 +25,10 @@ class AuthController extends Controller
             'full_name.required' => 'Vui lòng nhập họ và tên',
             'email.required' => 'Vui lòng nhập email',
             'email.email' => 'Email không hợp lệ',
-            'email.unique' => 'Email đã tồn tại',
+            'email.unique' => 'Email đã được đăng ký',
             'phone.required' => 'Vui lòng nhập số điện thoại',
             'phone.regex' => 'Số điện thoại không hợp lệ',
-            'phone.unique' => 'Số điện thoại đã tồn tại',
+            'phone.unique' => 'Số điện thoại đã được đăng ký',
             'password.required' => 'Vui lòng nhập mật khẩu',
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
             'role.in' => 'Quyền không hợp lệ',
@@ -55,7 +55,6 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'method' => filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone'
             ]);
-            // app(OtpController::class)->sendOtp($otpRequest);
         }
 
         return response()->json([
