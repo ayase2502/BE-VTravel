@@ -12,11 +12,13 @@ return new class extends Migration {
     {
         Schema::create('otps', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->integer('user_id');
             $table->string('method'); // 'email' hoặc 'phone'
-            $table->string('code');   // 6 số
-            $table->timestamp('expires_at');
-            $table->timestamps();
+            $table->string('code');   // mã gồm 6 số
+            $table->timestamp('expires_at'); // thời điểm hết hạn
+            $table->timestamps(); // created_at, updated_at
+
+            // Khóa ngoại
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
