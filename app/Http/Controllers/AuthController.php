@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -109,31 +111,67 @@ class AuthController extends Controller
 
         Auth::login($user);
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'message' => 'Đăng nhập thành công',
             'user' => $user,
-        ]);
+        ])->cookie(
+                'auth_token',
+                $token,
+                60 * 24 * 7,
+                null,
+                null,
+                false, // Secure = false trong local, cần bật khi deploy
+                true,
+                false,
+                'Strict'
+            );
     }
 
 
     // Đăng xuất
     public function logout(Request $request)
     {
-        // Nếu bạn dùng Sanctum (token-based), hãy xoá token
-        if ($request->user()?->currentAccessToken()) {
-            $request->user()->currentAccessToken()->delete();
+        Log::info('Logout route hit');
+
+        try {
+            $user = $request->user();
+            Log::info('User:', [$user]);
+
+            // Lấy access token
+            $accessToken = $user?->currentAccessToken();
+
+            // Chỉ xóa token nếu đúng loại
+            if ($accessToken instanceof PersonalAccessToken) {
+                $accessToken->delete();
+                Log::info('Token deleted');
+            } else {
+                Log::info('Không phải PersonalAccessToken, không xóa');
+            }
+
+            // Nếu dùng session (guard web)
+            if (Auth::guard('web')->check()) {
+                Auth::guard('web')->logout();
+                Log::info('Đã logout khỏi session web');
+            }
+
+            // Invalidate session & regenerate CSRF
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json(['message' => 'Đăng xuất thành công'])
+                ->cookie('XSRF-TOKEN', '', -1)
+                ->cookie('laravel_session', '', -1);
+        } catch (\Throwable $e) {
+            Log::error('Logout failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'message' => 'Đăng xuất thất bại',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Nếu bạn dùng session-based auth (web), thì cũng nên logout khỏi session
-        Auth::guard('web')->logout();
-
-        // Invalidate session và regenerate token để tránh CSRF reuse
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return response()->json([
-            'message' => 'Đăng xuất thành công'
-        ]);
     }
-
 }

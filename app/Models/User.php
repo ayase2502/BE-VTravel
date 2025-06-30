@@ -10,8 +10,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;   
-     protected $fillable = [
+
+    use HasApiTokens, HasFactory, Notifiable;
+    protected $fillable = [
         'full_name',
         'email',
         'phone',
@@ -30,5 +31,11 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
         ];
+    }
+    protected $appends = ['avatar_url'];
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
     }
 }

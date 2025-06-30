@@ -25,15 +25,15 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
     return response()->json(['user' => $request->user()]);
 });
 
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware(['web', 'auth:sanctum']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);
     Route::post('/user/update/{id}', [UserController::class, 'update']);
-    Route::delete('use/delete/{id}', [UserController::class, 'destroy']);
+    Route::delete('user/delete/{id}', [UserController::class, 'destroy']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -59,5 +59,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'profile']);
-    Route::put('/user', [UserController::class, 'updateProfile']);
+    Route::put('/user/update', [UserController::class, 'updateProfile']);
 });

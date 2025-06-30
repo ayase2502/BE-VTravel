@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class UserController extends Controller
 {
     use AuthorizesRequests;
+
     // Danh sách user (chỉ admin mới xem được)
     public function index()
     {
@@ -65,7 +66,6 @@ class UserController extends Controller
     // Cập nhật user
     public function update(Request $request, $id)
     {
-
         $user = User::find($id);
         if (!$user)
             return response()->json(['message' => 'Không tìm thấy user'], 404);
@@ -104,19 +104,40 @@ class UserController extends Controller
         return response()->json(['message' => 'Cập nhật thành công', 'user' => $user]);
     }
 
-    // Xoá user (admin)
+    // Xóa user
     public function destroy($id)
     {
         $user = User::find($id);
-        if (!$user)
+        if (!$user) {
             return response()->json(['message' => 'Không tìm thấy user'], 404);
+        }
+
+        $currentUser = Auth::user();
+
+        // Kiểm tra nếu người dùng hiện tại là staff
+        if ($currentUser->role === 'staff') {
+            // Staff chỉ được "xóa" (chuyển is_deleted thành inactive) tài khoản customer
+            if ($user->role !== 'customer') {
+                return response()->json(['message' => 'Bạn không có quyền xóa tài khoản này'], 403);
+            }
+
+            // Cập nhật is_deleted thành 'inactive' thay vì xóa hoàn toàn
+            $user->is_deleted = 'inactive';
+            $user->save();
+
+            return response()->json(['message' => 'Đã chuyển trạng thái tài khoản thành ngưng hoạt động']);
+        }
+
+        // Kiểm tra quyền xóa cho admin
         $this->authorize('delete', $user);
 
-        if ($user->avatar)
+        // Admin có thể xóa hoàn toàn tài khoản
+        if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);
+        }
         $user->delete();
 
-        return response()->json(['message' => 'Xoá user thành công']);
+        return response()->json(['message' => 'Xóa user thành công']);
     }
 
     // Xem thông tin profile của user hiện tại
@@ -142,20 +163,30 @@ class UserController extends Controller
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
-
-            // Lưu avatar mới
             $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // Cập nhật thông tin khác
-        if ($request->filled('full_name'))
+        if ($request->filled('full_name')) {
             $user->full_name = $request->full_name;
-        if ($request->filled('phone'))
+        }
+
+        if ($request->filled('phone')) {
             $user->phone = $request->phone;
-        if ($request->filled('password'))
-            $user->password = bcrypt($request->password);
+        }
+
+        // Reset is_verified nếu email thay đổi
+        if ($request->filled('email') && $request->email !== $user->email) {
+            $user->email = $request->email;
+            $user->is_verified = false;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
 
         $user->save();
+
+        $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
 
         return response()->json([
             'message' => 'Cập nhật thông tin cá nhân thành công!',

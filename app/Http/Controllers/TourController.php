@@ -19,55 +19,55 @@ class TourController extends Controller
 
     public function store(Request $request)
     {
-       $request->validate([
-        'category_id' => 'required|exists:tour_categories,category_id',
-        'tour_name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'itinerary' => 'nullable|string',
-        'price' => 'required|numeric',
-        'discount_price' => 'nullable|numeric',
-        'destination' => 'nullable|string',
-        'duration' => 'nullable|string',
-        'status' => 'in:visible,hidden',
-        'image' => 'required|image', // ảnh đại diện tour
-        'images.*' => 'nullable|image|max:2048', // ảnh thêm cho album
-    ]);
+        $request->validate([
+            'category_id' => 'required|exists:tour_categories,category_id',
+            'tour_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'itinerary' => 'nullable|string',
+            'price' => 'required|numeric',
+            'discount_price' => 'nullable|numeric',
+            'destination' => 'nullable|string',
+            'duration' => 'nullable|string',
+            'status' => 'in:visible,hidden',
+            'image' => 'required|image', // ảnh đại diện tour
+            'images.*' => 'nullable|image|max:2048', // ảnh thêm cho album
+        ]);
 
-    // Bước 1: Tạo album mới
-    $album = Album::create([
-        'title' => 'Album cho tour ' . $request->tour_name,
-    ]);
+        // Bước 1: Tạo album mới
+        $album = Album::create([
+            'title' => 'Album cho tour ' . $request->tour_name,
+        ]);
 
-    // Bước 2: Lưu ảnh đại diện tour
-    $imagePath = $request->file('image')->store('tours', 'public');
+        // Bước 2: Lưu ảnh đại diện tour
+        $imagePath = $request->file('image')->store('tours', 'public');
 
-    // Bước 3: Tạo tour
-    $tour = Tour::create([
-        'category_id' => $request->category_id,
-        'album_id' => $album->album_id,
-        'tour_name' => $request->tour_name,
-        'description' => $request->description,
-        'itinerary' => $request->itinerary,
-        'price' => $request->price,
-        'discount_price' => $request->discount_price,
-        'destination' => $request->destination,
-        'duration' => $request->duration,
-        'status' => $request->status ?? 'visible',
-        'image' => $imagePath,
-    ]);
+        // Bước 3: Tạo tour
+        $tour = Tour::create([
+            'category_id' => $request->category_id,
+            'album_id' => $album->album_id,
+            'tour_name' => $request->tour_name,
+            'description' => $request->description,
+            'itinerary' => $request->itinerary,
+            'price' => $request->price,
+            'discount_price' => $request->discount_price,
+            'destination' => $request->destination,
+            'duration' => $request->duration,
+            'status' => $request->status ?? 'visible',
+            'image' => $imagePath,
+        ]);
 
-    // Bước 4: Lưu các ảnh khác vào bảng album_images (nếu có)
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $img) {
-            $path = $img->store('album_images', 'public');
+        // Bước 4: Lưu các ảnh khác vào bảng album_images (nếu có)
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $path = $img->store('album_images', 'public');
 
-            AlbumImage::create([
-                'album_id' => $album->album_id,
-                'image_url' => $path,
-                'caption' => null
-            ]);
+                AlbumImage::create([
+                    'album_id' => $album->album_id,
+                    'image_url' => $path,
+                    'caption' => null
+                ]);
+            }
         }
-    }
 
         return response()->json([
             'message' => 'Tạo tour thành công',
@@ -100,7 +100,8 @@ class TourController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($tour->image) Storage::disk('public')->delete($tour->image);
+            if ($tour->image)
+                Storage::disk('public')->delete($tour->image);
             $tour->image = $request->file('image')->store('tours', 'public');
         }
 
@@ -116,7 +117,8 @@ class TourController extends Controller
     {
         $tour = Tour::findOrFail($id);
 
-        if ($tour->image) Storage::disk('public')->delete($tour->image);
+        if ($tour->image)
+            Storage::disk('public')->delete($tour->image);
 
         $tour->delete();
 
