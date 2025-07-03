@@ -17,9 +17,15 @@ class UserPolicy
     /**
      * Admin hoặc chính chủ user mới được xem
      */
-    public function view(User $user, User $model): bool
+    public function view(User $currentUser, User $targetUser)
     {
-        return $user->role === 'admin' || $user->id === $model->id;
+        // Nếu target là customer → ai cũng xem được
+        if ($targetUser->role === 'customer') {
+            return true;
+        }
+
+        // Chỉ admin mới được xem staff hoặc admin
+        return $currentUser->role === 'admin';
     }
 
     /**

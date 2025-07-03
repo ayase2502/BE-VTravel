@@ -16,8 +16,14 @@ class UserController extends Controller
     // Danh sách user (chỉ admin mới xem được)
     public function index()
     {
-        return response()->json(User::all());
+        $users = User::all()->map(function ($user) {
+            $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
+            return $user;
+        });
+
+        return response()->json($users);
     }
+
 
     // Chi tiết user
     public function show($id)
@@ -67,44 +73,82 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::find($id);
-        if (!$user)
+        if (!$user) {
             return response()->json(['message' => 'Không tìm thấy user'], 404);
+        }
+
         $this->authorize('update', $user);
 
         $request->validate([
             'full_name' => 'sometimes|string|max:100',
-            'email' => 'sometimes|email|unique:users,email,' . $id . ',id',
-            'phone' => 'sometimes|string|unique:users,phone,' . $id . ',id',
+            'email' => 'sometimes|email|unique:users,email,' . $id,
+            'phone' => 'sometimes|string|unique:users,phone,' . $id,
             'password' => 'nullable|string|min:6',
             'role' => 'in:customer,staff,admin',
-            'avatar' => 'nullable|image|max:2048'
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
+        $avatarPath = null;
         if ($request->hasFile('avatar')) {
-            if ($user->avatar)
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                 Storage::disk('public')->delete($user->avatar);
-            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+            }
+
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
         }
 
-        // Cập nhật từng trường nếu có trong request
-        if ($request->filled('full_name'))
-            $user->full_name = $request->full_name;
-        if ($request->filled('email'))
-            $user->email = $request->email;
-        if ($request->filled('phone'))
-            $user->phone = $request->phone;
-        if ($request->filled('role'))
-            $user->role = $request->role;
+        $user->fill($request->only([
+            'full_name',
+            'email',
+            'phone',
+            'role',
+        ]));
+
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            $user->password = Hash::make($request->input('password'));
         }
+
         $user->save();
 
-        $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
-        return response()->json(['message' => 'Cập nhật thành công', 'user' => $user]);
+        $user->avatar_url = $avatarPath ? asset('storage/' . $avatarPath) : null;
+
+        return response()->json([
+            'message' => 'Cập nhật thành công',
+            'user' => $user
+        ]);
     }
 
-    // Xóa user
+
+
+    // Xóa mềm user: chỉ đổi trạng thái is_deleted
+    public function softDelete($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy user'], 404);
+        }
+
+        $currentUser = Auth::user();
+
+        // Staff chỉ được xóa mềm customer
+        if ($currentUser->role === 'staff' && $user->role !== 'customer') {
+            return response()->json(['message' => 'Bạn không có quyền chuyển trạng thái tài khoản này'], 403);
+        }
+
+        // Kiểm tra quyền update/xóa
+        if ($currentUser->role !== 'admin' && $currentUser->role !== 'staff') {
+            return response()->json(['message' => 'Bạn không có quyền'], 403);
+        }
+
+        // Chuyển trạng thái
+        $user->is_deleted = $user->is_deleted === 'active' ? 'inactive' : 'active';
+        $user->save();
+
+        return response()->json(['message' => 'Đã chuyển trạng thái tài khoản thành công', 'user' => $user]);
+    }
+
+    // Xóa vĩnh viễn user
     public function destroy($id)
     {
         $user = User::find($id);
@@ -114,24 +158,13 @@ class UserController extends Controller
 
         $currentUser = Auth::user();
 
-        // Kiểm tra nếu người dùng hiện tại là staff
-        if ($currentUser->role === 'staff') {
-            // Staff chỉ được "xóa" (chuyển is_deleted thành inactive) tài khoản customer
-            if ($user->role !== 'customer') {
-                return response()->json(['message' => 'Bạn không có quyền xóa tài khoản này'], 403);
-            }
-
-            // Cập nhật is_deleted thành 'inactive' thay vì xóa hoàn toàn
-            $user->is_deleted = 'inactive';
-            $user->save();
-
-            return response()->json(['message' => 'Đã chuyển trạng thái tài khoản thành ngưng hoạt động']);
+        // Chỉ admin được xóa vĩnh viễn
+        if ($currentUser->role !== 'admin') {
+            return response()->json(['message' => 'Chỉ admin mới được xóa vĩnh viễn tài khoản'], 403);
         }
 
-        // Kiểm tra quyền xóa cho admin
         $this->authorize('delete', $user);
 
-        // Admin có thể xóa hoàn toàn tài khoản
         if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);
         }
@@ -160,7 +193,7 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                 Storage::disk('public')->delete($user->avatar);
             }
             $user->avatar = $request->file('avatar')->store('avatars', 'public');
@@ -174,7 +207,6 @@ class UserController extends Controller
             $user->phone = $request->phone;
         }
 
-        // Reset is_verified nếu email thay đổi
         if ($request->filled('email') && $request->email !== $user->email) {
             $user->email = $request->email;
             $user->is_verified = false;
@@ -193,4 +225,5 @@ class UserController extends Controller
             'user' => $user
         ]);
     }
+
 }

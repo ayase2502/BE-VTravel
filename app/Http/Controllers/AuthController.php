@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -51,6 +52,12 @@ class AuthController extends Controller
             'role' => $request->role ?? 'customer',
             'is_verified' => $isAdmin, // admin tạo thì tự động xác thực
         ]);
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public'); // lưu vào storage/app/public/avatars
+            $user->avatar = Storage::url($path); // trả về URL công khai
+            $user->save();
+        }
 
         if (!$isAdmin) {
             $otpRequest = new Request([
