@@ -16,7 +16,7 @@ class UserController extends Controller
     // Danh sách user (chỉ admin mới xem được)
     public function index()
     {
-        $users = User::all()->map(function ($user) {
+        $users = User::where('is_deleted', 'active')->get()->map(function ($user) {
             $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
             return $user;
         });
@@ -28,7 +28,7 @@ class UserController extends Controller
     // Chi tiết user
     public function show($id)
     {
-        $user = User::find($id);
+        $user = User::where('is_deleted', 'active')->find($id);
         if (!$user)
             return response()->json(['message' => 'Không tìm thấy user'], 404);
         $this->authorize('view', $user);
