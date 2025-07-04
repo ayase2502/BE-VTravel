@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class UserController extends Controller
 {
@@ -72,7 +74,7 @@ class UserController extends Controller
     // Cập nhật user
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
+        $user = User::where('is_deleted', 'active')->find($id);
         if (!$user) {
             return response()->json(['message' => 'Không tìm thấy user'], 404);
         }
@@ -146,6 +148,30 @@ class UserController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Đã chuyển trạng thái tài khoản thành công', 'user' => $user]);
+    }
+
+    //Danh sách user đã xóa mềm
+    public function trashed()
+    {
+        $this->authorize('viewAny', User::class);
+        $users = User::where('is_deleted', 'inactive')->get()->map(function ($user) {
+            $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
+        });
+
+        return response()->json($users);
+    }    
+
+    //Khôi phục user đã xóa mềm
+    public function restore($id){
+        $user = User::where('is_deleted', 'inactive')->find($id);
+        if (!$user){
+            return response()->json(['message' => 'Không tìm thấy user bị xóa'], 404);
+        }
+        $this->authorize('update', $user);
+        $user->is_deleted = 'active';
+        $user->save();
+        
+        return response()->json(['message' => 'Khôi phục thành công', 'user'=>$user]);
     }
 
     // Xóa vĩnh viễn user

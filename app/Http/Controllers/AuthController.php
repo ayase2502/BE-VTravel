@@ -116,26 +116,18 @@ class AuthController extends Controller
             ], 403);
         }
 
-        Auth::login($user);
+        // KHÔNG gọi Auth::login($user)
+        // Chỉ cấp token cho truy cập qua Bearer
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Đăng nhập thành công',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
             'user' => $user,
-        ])->cookie(
-                'auth_token',
-                $token,
-                60 * 24 * 7,
-                null,
-                null,
-                false, // Secure = false trong local, cần bật khi deploy
-                true,
-                false,
-                'Strict'
-            );
+        ]);
     }
-
 
     // Đăng xuất
     public function logout(Request $request)

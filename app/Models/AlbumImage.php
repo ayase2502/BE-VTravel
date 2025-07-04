@@ -14,6 +14,7 @@ class AlbumImage extends Model
         'album_id',
         'image_url',
         'caption',
+        'is_deleted'
     ];
 
     public function album()

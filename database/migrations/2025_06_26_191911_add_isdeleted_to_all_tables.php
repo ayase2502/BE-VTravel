@@ -7,43 +7,55 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // Add isdeleted to tours
         Schema::table('tours', function (Blueprint $table) {
-            $table->boolean('isdeleted')->default(false)->after('status');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->after('status');
         });
 
-        // Add isdeleted to tour_categories
         Schema::table('tour_categories', function (Blueprint $table) {
-            $table->boolean('isdeleted')->default(false)->after('thumbnail');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->after('thumbnail');
         });
 
-        // Add isdeleted to album_images
-        Schema::table('album_images', function (Blueprint $table) {
-            $table->boolean('isdeleted')->default(false)->after('caption');
-        });
-
-        // Add isdeleted to albums
         Schema::table('albums', function (Blueprint $table) {
-            $table->boolean('isdeleted')->default(false)->after('title');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->after('title');
+        });
+
+        Schema::table('album_images', function (Blueprint $table) {
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->after('caption');
+        });
+
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->after('status');
+        });
+
+        Schema::table('destinations', function (Blueprint $table) {
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->after('status');
         });
     }
 
     public function down(): void
     {
         Schema::table('tours', function (Blueprint $table) {
-            $table->dropColumn('isdeleted');
+            $table->dropColumn('is_deleted');
         });
 
         Schema::table('tour_categories', function (Blueprint $table) {
-            $table->dropColumn('isdeleted');
-        });
-
-        Schema::table('album_images', function (Blueprint $table) {
-            $table->dropColumn('isdeleted');
+            $table->dropColumn('is_deleted');
         });
 
         Schema::table('albums', function (Blueprint $table) {
-            $table->dropColumn('isdeleted');
+            $table->dropColumn('is_deleted');
+        });
+
+        Schema::table('album_images', function (Blueprint $table) {
+            $table->dropColumn('is_deleted');
+        });
+
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dropColumn('is_deleted');
+        });
+
+        Schema::table('destinations', function (Blueprint $table) {
+            $table->dropColumn('is_deleted');
         });
     }
 };

@@ -8,7 +8,7 @@ class Tour extends Model
     protected $primaryKey = 'tour_id';
     protected $fillable = [
         'category_id', 'album_id', 'tour_name', 'description', 'itinerary',
-        'image', 'price', 'discount_price', 'destination', 'duration', 'status'
+        'image', 'price', 'discount_price', 'destination', 'duration', 'status','is_deleted',
     ];
 
     public function category()
