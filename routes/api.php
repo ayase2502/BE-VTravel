@@ -14,6 +14,7 @@ use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\AlbumImageController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\SiteSettingController;
+use App\Http\Controllers\ReviewController;
 
 // --------- AUTH ---------
 Route::post('/register', [AuthController::class, 'register']); // đăng ký người dùng mới
@@ -131,5 +132,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{id}/soft-delete', [SiteSettingController::class, 'softDelete']); // xóa mềm thiết lập
         Route::delete('/{id}', [SiteSettingController::class, 'destroy']); // xóa thiết lập
         Route::post('/bulk-update', [SiteSettingController::class, 'bulkUpdate']); // cập nhật hàng loạt thiết lập
+    });
+
+    // -------- REVIEWS --------
+    Route::prefix('reviews')->group(function () {
+        Route::get('/', [ReviewController::class, 'index']); // liệt kê tất cả reviews
+        Route::get('/trashed', [ReviewController::class, 'trashed']); // liệt kê reviews đã ẩn
+        Route::get('/statistics', [ReviewController::class, 'statistics']); // thống kê reviews
+        Route::get('/tour/{tourId}', [ReviewController::class, 'getByTour']); // reviews theo tour
+        Route::get('/{id}', [ReviewController::class, 'show']); // lấy chi tiết review theo ID
+        Route::post('/', [ReviewController::class, 'store']); // tạo mới review
+        Route::put('/{id}', [ReviewController::class, 'update']); // cập nhật review
+        Route::patch('/{id}/soft-delete', [ReviewController::class, 'softDelete']); // xóa mềm review
+        Route::patch('/{id}/restore', [ReviewController::class, 'restore']); // khôi phục review
+        Route::delete('/{id}', [ReviewController::class, 'destroy']); // xóa vĩnh viễn review
     });
 });
