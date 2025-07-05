@@ -18,8 +18,8 @@ class UserController extends Controller
     // Danh sách user (chỉ admin mới xem được)
     public function index()
     {
-        $users = User::where('is_deleted', 'active')->get()->map(function ($user) {
-            $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
+        $users = User::whereIn('role', ['admin', 'staff','customer'])->get()->map(function ($user) {
+            $user->avatar_url = $user->avatar ? asset('' . $user->avatar) : null;
             return $user;
         });
 
@@ -70,6 +70,7 @@ class UserController extends Controller
         $user->avatar_url = $avatarPath ? asset('storage/' . $avatarPath) : null;
         return response()->json(['message' => 'Thêm tài khoản thành công', 'user' => $user], 201);
     }
+    
 
     // Cập nhật user
     public function update(Request $request, $id)

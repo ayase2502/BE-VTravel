@@ -43,6 +43,10 @@ class AuthController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         $user = User::create([
             'full_name' => $request->full_name,
@@ -51,13 +55,14 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role ?? 'customer',
             'is_verified' => $isAdmin, // admin tạo thì tự động xác thực
+            'avatar' => $avatarPath,
         ]);
-
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public'); // lưu vào storage/app/public/avatars
-            $user->avatar = Storage::url($path); // trả về URL công khai
-            $user->save();
-        }
+        $user->avatar_url = $avatarPath ? asset('storage/' . $avatarPath) : null;
+        // if ($request->hasFile('avatar')) {
+        //     $path = $request->file('avatar')->store('avatars', 'public'); // lưu vào storage/app/public/avatars
+        //     $user->avatar = Storage::url($path); // trả về URL công khai
+        //     $user->save();
+        // }
 
         if (!$isAdmin) {
             $otpRequest = new Request([
