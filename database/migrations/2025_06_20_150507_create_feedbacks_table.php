@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('content');
             $table->integer('rating')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

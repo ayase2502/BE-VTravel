@@ -24,6 +24,8 @@ return new class extends Migration
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->nullable()->default('pending');
             $table->text('cancel_reason')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+
         });
     }
 

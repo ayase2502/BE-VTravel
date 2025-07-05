@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('price_per_day', 12)->nullable();
             $table->string('location')->nullable();
             $table->integer('album_id')->nullable()->index('album_id');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

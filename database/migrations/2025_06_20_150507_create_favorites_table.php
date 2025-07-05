@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('user_id')->nullable()->index('user_id');
             $table->integer('tour_id')->nullable()->index('tour_id');
             $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

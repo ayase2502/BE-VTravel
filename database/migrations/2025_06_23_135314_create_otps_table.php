@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('code');   // mã gồm 6 số
             $table->timestamp('expires_at'); // thời điểm hết hạn
             $table->timestamps(); // created_at, updated_at
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
 
             // Khóa ngoại
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

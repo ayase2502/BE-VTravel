@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('bus_route_id')->nullable()->index('bus_route_id');
             $table->integer('quantity')->nullable()->default(1);
             $table->decimal('price', 12)->nullable();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+
         });
     }
 

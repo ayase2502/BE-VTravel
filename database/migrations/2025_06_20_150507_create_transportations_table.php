@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name', 100)->nullable();
             $table->decimal('price', 12)->nullable();
             $table->integer('album_id')->nullable()->index('album_id');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

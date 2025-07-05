@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id('category_id');
             $table->string('category_name', 100);
             $table->string('thumbnail')->nullable();
-            $table->enum('is_deleted', ['active', 'inactive'])->default('active');
             $table->timestamps();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

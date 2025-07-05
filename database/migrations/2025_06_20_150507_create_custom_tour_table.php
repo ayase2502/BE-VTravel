@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('total_price', 12)->nullable();
             $table->enum('status', ['draft', 'confirmed', 'cancelled', 'completed'])->nullable()->default('draft');
             $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

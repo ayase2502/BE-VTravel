@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('message');
             $table->enum('type', ['system', 'booking', 'promotion', 'chat', 'custom'])->nullable()->default('system');
             $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

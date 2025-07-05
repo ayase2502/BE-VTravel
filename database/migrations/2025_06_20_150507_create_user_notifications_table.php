@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('notification_id')->index('notification_id');
             $table->enum('status', ['unread', 'read'])->nullable()->default('unread');
             $table->timestamp('read_at')->nullable();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

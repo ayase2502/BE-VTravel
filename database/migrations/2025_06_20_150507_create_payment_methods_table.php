@@ -15,6 +15,7 @@ return new class extends Migration
             $table->integer('id', true);
             $table->string('name', 100);
             $table->text('description')->nullable();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

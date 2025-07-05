@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image_url')->nullable();
             $table->string('caption')->nullable();
             $table->timestamp('uploaded_at')->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

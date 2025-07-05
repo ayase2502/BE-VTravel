@@ -10,6 +10,7 @@ class AlbumImage extends Model
     protected $primaryKey = 'image_id';
 
     public $timestamps = false;
+    
     protected $fillable = [
         'album_id',
         'image_url',
@@ -17,8 +18,18 @@ class AlbumImage extends Model
         'is_deleted'
     ];
 
+    protected $attributes = [
+        'is_deleted' => 'active'
+    ];
+
     public function album()
     {
         return $this->belongsTo(Album::class, 'album_id', 'album_id');
+    }
+
+    // Accessor để tự động tạo URL đầy đủ
+    public function getImageUrlFullAttribute()
+    {
+        return $this->image_url ? asset('storage/' . $this->image_url) : null;
     }
 }

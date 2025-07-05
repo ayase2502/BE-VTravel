@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('transportation_id')->nullable()->index('transportation_id');
             $table->decimal('price', 12)->nullable();
             $table->text('description')->nullable();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+
         });
     }
 

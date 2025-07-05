@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->enum('status', ['new', 'processed'])->nullable()->default('new');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+
         });
     }
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed'])->nullable()->default('pending');
             $table->string('transaction_code', 100)->nullable()->unique('transaction_code');
             $table->timestamp('paid_at')->nullable();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

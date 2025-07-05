@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('language', 50)->nullable();
             $table->integer('experience_years')->nullable();
             $table->integer('album_id')->nullable()->index('album_id');
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

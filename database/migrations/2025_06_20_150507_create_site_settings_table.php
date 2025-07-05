@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('key_value')->nullable();
             $table->text('description')->nullable();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('thumbnail')->nullable();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
             $table->timestamp('created_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
         });
     }
 
