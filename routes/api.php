@@ -15,6 +15,7 @@ use App\Http\Controllers\AlbumImageController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\FavoriteController;
 
 // --------- AUTH ---------
 Route::post('/register', [AuthController::class, 'register']); // đăng ký người dùng mới
@@ -91,10 +92,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // -------- DESTINATION --------
     Route::prefix('destinations')->group(function () {
         Route::get('/', [DestinationController::class, 'index']); // liệt kê tất cả điểm đến
+        Route::get('/highlighted', [DestinationController::class, 'highlighted']); // điểm đến nổi bật
         Route::get('/trashed', [DestinationController::class, 'trashed']); // liệt kê điểm đến đã xóa
+        Route::get('/statistics', [DestinationController::class, 'statistics']); // thống kê destinations
         Route::get('/{id}', [DestinationController::class, 'show']); // lấy chi tiết điểm đến theo ID
         Route::post('/', [DestinationController::class, 'store']); // tạo mới điểm đến
         Route::put('/{id}', [DestinationController::class, 'update']); // cập nhật điểm đến
+        Route::patch('/{id}/toggle-highlight', [DestinationController::class, 'toggleHighlight']); // chuyển đổi nổi bật
         Route::patch('/{id}/soft-delete', [DestinationController::class, 'softDelete']); // xóa mềm điểm đến
         Route::delete('/{id}', [DestinationController::class, 'destroy']); // xóa vĩnh viễn điểm đến
     });
@@ -146,5 +150,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{id}/soft-delete', [ReviewController::class, 'softDelete']); // xóa mềm review
         Route::patch('/{id}/restore', [ReviewController::class, 'restore']); // khôi phục review
         Route::delete('/{id}', [ReviewController::class, 'destroy']); // xóa vĩnh viễn review
+    });
+
+    // -------- FAVORITES --------
+    Route::prefix('favorites')->group(function () {
+        Route::get('/', [FavoriteController::class, 'index']); // liệt kê tất cả favorites
+        Route::get('/my-favorites', [FavoriteController::class, 'myFavorites']); // danh sách yêu thích của user hiện tại
+        Route::get('/trashed', [FavoriteController::class, 'trashed']); // liệt kê favorites đã xóa
+        Route::get('/statistics', [FavoriteController::class, 'statistics']); // thống kê favorites
+        Route::get('/{id}', [FavoriteController::class, 'show']); // lấy chi tiết favorite theo ID
+        Route::post('/', [FavoriteController::class, 'store']); // tạo mới favorite
+        Route::put('/{id}', [FavoriteController::class, 'update']); // cập nhật favorite
+        Route::patch('/{id}/soft-delete', [FavoriteController::class, 'softDelete']); // xóa mềm favorite
+        Route::patch('/{id}/restore', [FavoriteController::class, 'restore']); // khôi phục favorite
+        Route::delete('/{id}', [FavoriteController::class, 'destroy']); // xóa vĩnh viễn favorite
     });
 });
