@@ -143,35 +143,33 @@ class AuthController extends Controller
             $user = $request->user();
             Log::info('User:', [$user]);
 
-            // Lấy access token
-            $accessToken = $user?->currentAccessToken();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Người dùng chưa đăng nhập'
+                ], 401);
+            }
 
-            // Chỉ xóa token nếu đúng loại
-            if ($accessToken instanceof PersonalAccessToken) {
+            // Lấy access token hiện tại
+            $accessToken = $user->currentAccessToken();
+
+            // Xóa token hiện tại
+            if ($accessToken) {
                 $accessToken->delete();
                 Log::info('Token deleted');
-            } else {
-                Log::info('Không phải PersonalAccessToken, không xóa');
             }
 
-            // Nếu dùng session (guard web)
-            if (Auth::guard('web')->check()) {
-                Auth::guard('web')->logout();
-                Log::info('Đã logout khỏi session web');
-            }
+            // Hoặc xóa tất cả tokens của user (nếu muốn logout khỏi tất cả thiết bị)
+            // $user->tokens()->delete();
 
-            // Invalidate session & regenerate CSRF
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return response()->json(['message' => 'Đăng xuất thành công'])
-                ->cookie('XSRF-TOKEN', '', -1)
-                ->cookie('laravel_session', '', -1);
+            return response()->json([
+                'message' => 'Đăng xuất thành công'
+            ]);
         } catch (\Throwable $e) {
             Log::error('Logout failed', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
+
             return response()->json([
                 'message' => 'Đăng xuất thất bại',
                 'error' => $e->getMessage()

@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', fn(Request $request) => response()->json(['user' => $request->user()]));
 
     // Đăng xuất
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']); // đăng xuất người dùng
 
     // -------- USERS --------
     Route::get('/users', [UserController::class, 'index']); // liệt kê tất cả người dùng
