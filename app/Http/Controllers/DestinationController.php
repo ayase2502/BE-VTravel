@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Destination;
 use Illuminate\Http\Request;
+use App\Models\Album;
+use App\Models\AlbumImage;
 use Illuminate\Support\Facades\Storage;
 
 class DestinationController extends Controller
@@ -27,13 +29,22 @@ class DestinationController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
-            'album_id' => 'nullable|exists:albums,album_id',
+            // 'album_id' => 'nullable|exists:albums,album_id',
             'image' => 'nullable|image|max:2048',
         ]);
 
-        $imagePath = null;
+        $albumId = null;
+
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('destinations', 'public');
+            $album = Album::create(['title' => 'Album cho ' . $request->name]);
+            $albumId = $album->album_id;
+            $imagePath = $request->file('image')->store("albums/{$albumId}", 'public');
+            AlbumImage::create([
+                'album_id' => $albumId,
+                'image_url' => $imagePath,
+                'caption' => 'Ảnh đại diện',
+                'is_deleted' => 'active'
+            ]);
         }
 
         $destination = Destination::create([
@@ -63,9 +74,14 @@ class DestinationController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($destination->image) Storage::disk('public')->delete($destination->image);
-            $destination->image = $request->file('image')->store('destinations', 'public');
+        if ($request->hasFile('image') && $destination->album_id) {
+            $imagePath = $request->file('image')->store("albums/{$destination->album_id}", 'public');
+            AlbumImage::create([
+                'album_id' => $destination->album_id,
+                'image_url' => $imagePath,
+                'caption' => 'Cập nhật ảnh',
+                'is_deleted' => 'active'
+            ]);
         }
 
         $destination->fill($request->except('image'))->save();
