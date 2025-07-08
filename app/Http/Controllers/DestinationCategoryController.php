@@ -9,7 +9,7 @@ class DestinationCategoryController extends Controller
 {
     public function index()
     {
-        $categories = DestinationCategory::where('is_deleted', 'active')->get();
+        $categories = DestinationCategory::all();
         foreach ($categories as $cat) {
             $cat->thumbnail_url = $cat->thumbnail ? asset('storage/' . $cat->thumbnail) : null;
         }

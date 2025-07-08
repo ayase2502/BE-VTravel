@@ -12,7 +12,7 @@ class TourCategoryController extends Controller
     // Danh sách danh mục tour còn hoạt động
     public function index()
     {
-        $categories = TourCategory::where('is_deleted', 'active')->get();
+        $categories = TourCategory::all();
 
         foreach ($categories as $cat) {
             $cat->thumbnail_url = $cat->thumbnail ? asset('storage/' . $cat->thumbnail) : null;
