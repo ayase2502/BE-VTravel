@@ -29,11 +29,12 @@ class DestinationController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
-            // 'album_id' => 'nullable|exists:albums,album_id',
             'image' => 'nullable|image|max:2048',
+            'is_highlight' => 'nullable|in:yes,no',
         ]);
 
         $albumId = null;
+        $imagePath = null;
 
         if ($request->hasFile('image')) {
             $album = Album::create(['title' => 'Album cho ' . $request->name]);
@@ -51,9 +52,10 @@ class DestinationController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'location' => $request->location,
-            'album_id' => $request->album_id,
+            'album_id' => $albumId,
             'image' => $imagePath,
-            'is_deleted' => 'active'
+            'is_deleted' => 'active',
+            'is_highlight' => $request->input('is_highlight', 'no')
         ]);
 
         return response()->json(['message' => 'Tạo địa điểm thành công', 'destination' => $destination], 201);
@@ -70,8 +72,9 @@ class DestinationController extends Controller
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
-            'album_id' => 'nullable|exists:albums,album_id',
+            // 'album_id' => 'nullable|exists:albums,album_id',
             'image' => 'nullable|image|max:2048',
+            'is_highlight' => 'nullable|in:yes,no',
         ]);
 
         if ($request->hasFile('image') && $destination->album_id) {
@@ -85,6 +88,11 @@ class DestinationController extends Controller
         }
 
         $destination->fill($request->except('image'))->save();
+
+        if ($request->has('is_highlight')) {
+            $destination->is_highlight = $request->is_highlight;
+            $destination->save();
+        }
 
         return response()->json(['message' => 'Cập nhật địa điểm thành công', 'destination' => $destination]);
     }
@@ -114,6 +122,32 @@ class DestinationController extends Controller
     public function trashed()
     {
         $destinations = Destination::where('is_deleted', 'inactive')->with('album')->get();
+        return response()->json($destinations);
+    }
+
+    public function toggleHighlight($id)
+    {
+        $destination = Destination::find($id);
+        if (!$destination || $destination->is_deleted === 'inactive') {
+            return response()->json(['message' => 'Không tìm thấy địa điểm'], 404);
+        }
+
+        $destination->is_highlight = $destination->is_highlight === 'yes' ? 'no' : 'yes';
+        $destination->save();
+
+        return response()->json([
+            'message' => 'Cập nhật trạng thái nổi bật thành công',
+            'is_highlight' => $destination->is_highlight
+        ]);
+    }
+
+    public function highlights()
+    {
+        $destinations = Destination::where([
+            ['is_deleted', 'active'],
+            ['is_highlight', 'yes']
+        ])->with('album')->get();
+
         return response()->json($destinations);
     }
 }
