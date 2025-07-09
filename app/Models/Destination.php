@@ -10,8 +10,8 @@ class Destination extends Model
     use HasFactory;
 
     protected $table = 'destinations';
-
     protected $primaryKey = 'destination_id';
+    public $timestamps = false;
 
     protected $fillable = [
         'name',
@@ -19,7 +19,8 @@ class Destination extends Model
         'location',
         'image',
         'album_id',
-        'is_deleted'
+        'is_deleted',
+        'highlight' 
     ];
 
     protected $appends = ['image_url'];
@@ -28,6 +29,18 @@ class Destination extends Model
     public function getImageUrlAttribute()
     {
         return $this->image ? asset('storage/' . $this->image) : null;
+    }
+
+    // Scope để lấy destinations nổi bật
+    public function scopeHighlight($query)
+    {
+        return $query->where('highlight', 'yes');
+    }
+
+    // Scope để lấy destinations active
+    public function scopeActive($query)
+    {
+        return $query->where('is_deleted', 'active');
     }
 
     // Quan hệ: Destination thuộc về Album

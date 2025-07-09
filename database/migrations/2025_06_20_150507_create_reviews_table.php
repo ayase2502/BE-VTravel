@@ -19,6 +19,9 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+        
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('tour_id')->references('tour_id')->on('tours')->onDelete('set null');
         });
     }
 
