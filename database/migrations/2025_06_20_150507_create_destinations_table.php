@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->integer('album_id')->nullable()->index('album_id');
             $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+            $table->enum('highlight', ['yes', 'no'])->default('no')->comment('yes = nổi bật, no = không nổi bật');
             $table->timestamps();
         });
     }
