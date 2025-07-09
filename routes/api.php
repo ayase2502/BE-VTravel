@@ -12,10 +12,16 @@ use App\Http\Controllers\DestinationCategoryController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\AlbumImageController;
+
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\GuideController;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\BusRouteController;
+use App\Http\Controllers\MotorbikeController;
+
 
 // --------- AUTH ---------
 Route::post('/register', [AuthController::class, 'register']); // đăng ký người dùng mới
@@ -79,38 +85,40 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/statistics', [AlbumImageController::class, 'statistics']); // thống kê hình ảnh
     });
 
-    // -------- DESTINATION-CATEGORIES --------
+   //-------- DESTINATION-CATEGORIES --------
     Route::prefix('destination-categories')->group(function () {
-        Route::get('/', [DestinationCategoryController::class, 'index']); // liệt kê tất cả danh mục điểm đến
-        Route::get('/{id}', [DestinationCategoryController::class, 'show']); // lấy chi tiết danh mục điểm đến theo ID
-        Route::post('/', [DestinationCategoryController::class, 'store']); // tạo mới danh mục điểm đến
-        Route::put('/{id}', [DestinationCategoryController::class, 'update']); // cập nhật danh mục điểm đến
-        Route::put('/{id}/soft-delete', [DestinationCategoryController::class, 'softDelete']); // xóa mềm danh mục điểm đến
-        Route::delete('/{id}', [DestinationCategoryController::class, 'destroy']); // xóa vĩnh viễn danh mục điểm đến
+        Route::get('/', [DestinationCategoryController::class, 'index']);
+        Route::get('/{id}', [DestinationCategoryController::class, 'show']);
+        Route::post('/', [DestinationCategoryController::class, 'store']);
+        Route::put('/{id}', [DestinationCategoryController::class, 'update']);
+        Route::post('/{id}/soft-delete', [DestinationCategoryController::class, 'softDelete']);
+        Route::delete('/{id}', [DestinationCategoryController::class, 'destroy']);
     });
 
-    // -------- DESTINATION --------
-    Route::prefix('destinations')->group(function () {
-        Route::get('/', [DestinationController::class, 'index']); // liệt kê tất cả điểm đến
-        Route::get('/highlighted', [DestinationController::class, 'highlighted']); // điểm đến nổi bật
-        Route::get('/trashed', [DestinationController::class, 'trashed']); // liệt kê điểm đến đã xóa
-        Route::get('/statistics', [DestinationController::class, 'statistics']); // thống kê destinations
-        Route::get('/{id}', [DestinationController::class, 'show']); // lấy chi tiết điểm đến theo ID
-        Route::post('/', [DestinationController::class, 'store']); // tạo mới điểm đến
-        Route::put('/{id}', [DestinationController::class, 'update']); // cập nhật điểm đến
-        Route::patch('/{id}/toggle-highlight', [DestinationController::class, 'toggleHighlight']); // chuyển đổi nổi bật
-        Route::patch('/{id}/soft-delete', [DestinationController::class, 'softDelete']); // xóa mềm điểm đến
-        Route::delete('/{id}', [DestinationController::class, 'destroy']); // xóa vĩnh viễn điểm đến
+    //-------- DESTINATION --------
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/destinations', [DestinationController::class, 'index']);
+        Route::get('/destinations/{id}', [DestinationController::class, 'show']);
+        Route::post('/destinations', [DestinationController::class, 'store']);
+        Route::put('/destinations/{id}', [DestinationController::class, 'update']);
+        Route::delete('/destinations/{id}', [DestinationController::class, 'destroy']);
+        Route::post('/destinations/{id}/toggle', [DestinationController::class, 'softDelete']);
+        Route::get('/destinations/trashed', [DestinationController::class, 'trashed']);
+        Route::post('/destinations/{id}/highlight', [DestinationController::class, 'toggleHighlight']);
+        Route::get('/destinations/highlights', [DestinationController::class, 'highlights']);
     });
 
-    // -------- BOOKING --------
-    Route::get('/bookings', [BookingController::class, 'index']); // liệt kê tất cả booking
-    Route::get('/bookings/trashed', [BookingController::class, 'trashed']); // liệt kê booking đã xóa
-    Route::post('/bookings', [BookingController::class, 'store']); // tạo mới booking
-    Route::get('/bookings/{id}', [BookingController::class, 'show']); // lấy chi tiết booking theo ID
-    Route::put('/bookings/{id}', [BookingController::class, 'update']); // cập nhật booking
-    Route::patch('/bookings/{id}/soft-delete', [BookingController::class, 'softDelete']); // xóa mềm booking
-    Route::delete('/bookings/{id}', [BookingController::class, 'destroy']); // xóa vĩnh viễn booking
+    //-------- BOOKING --------
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/bookings', [BookingController::class, 'index']);
+        Route::get('/bookings/trashed', [BookingController::class, 'trashed']);
+        Route::post('/bookings', [BookingController::class, 'store']);
+        Route::get('/bookings/{id}', [BookingController::class, 'show']);
+        Route::put('/bookings/{id}', [BookingController::class, 'update']);
+        Route::post('/bookings/{id}/soft-delete', [BookingController::class, 'softDelete']);
+        Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);
+    });
+
 
     // -------- PROMOTIONS --------
     Route::prefix('promotions')->group(function () {
@@ -164,5 +172,48 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{id}/soft-delete', [FavoriteController::class, 'softDelete']); // xóa mềm favorite
         Route::patch('/{id}/restore', [FavoriteController::class, 'restore']); // khôi phục favorite
         Route::delete('/{id}', [FavoriteController::class, 'destroy']); // xóa vĩnh viễn favorite
+
+    //-------- GUIDES ------------
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/guides', [GuideController::class, 'index']);
+        Route::get('/guides/trashed', [GuideController::class, 'trashed']);
+        Route::get('/guides/{id}', [GuideController::class, 'show']);
+        Route::post('/guides', [GuideController::class, 'store']);
+        Route::put('/guides/{id}', [GuideController::class, 'update']);
+        Route::post('/guides/{id}/soft-delete', [GuideController::class, 'softDelete']);
+        Route::delete('/guides/{id}', [GuideController::class, 'destroy']);
+    });
+
+    //-------- HOTELS -------------
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/hotels', [HotelController::class, 'index']);
+        Route::get('/hotels/trashed', [HotelController::class, 'trashed']);
+        Route::get('/hotels/{id}', [HotelController::class, 'show']);
+        Route::post('/hotels', [HotelController::class, 'store']);
+        Route::put('/hotels/{id}', [HotelController::class, 'update']);
+        Route::post('/hotels/{id}/soft-delete', [HotelController::class, 'softDelete']);
+        Route::delete('/hotels/{id}', [HotelController::class, 'destroy']);
+    }); 
+
+    //-------- BUS ---------
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/bus-routes', [BusRouteController::class, 'index']);
+        Route::get('/bus-routes/trashed', [BusRouteController::class, 'trashed']);
+        Route::get('/bus-routes/{id}', [BusRouteController::class, 'show']);
+        Route::post('/bus-routes', [BusRouteController::class, 'store']);
+        Route::put('/bus-routes/{id}', [BusRouteController::class, 'update']);
+        Route::post('/bus-routes/{id}/soft-delete', [BusRouteController::class, 'softDelete']);
+        Route::delete('/bus-routes/{id}', [BusRouteController::class, 'destroy']);
+    });
+
+    //-------- MOTOBIKE ------
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/motorbikes', [MotorbikeController::class, 'index']);
+        Route::get('/motorbikes/trashed', [MotorbikeController::class, 'trashed']);
+        Route::get('/motorbikes/{id}', [MotorbikeController::class, 'show']);
+        Route::post('/motorbikes', [MotorbikeController::class, 'store']);
+        Route::put('/motorbikes/{id}', [MotorbikeController::class, 'update']);
+        Route::post ('/motorbikes/{id}/soft-delete', [MotorbikeController::class, 'softDelete']);
+        Route::delete('/motorbikes/{id}', [MotorbikeController::class, 'destroy']);
     });
 });

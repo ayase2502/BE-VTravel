@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('experience_years')->nullable();
             $table->integer('album_id')->nullable()->index('album_id');
             $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+            $table->timestamps();
         });
     }
 
