@@ -61,29 +61,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [TourCategoryController::class, 'destroy']); // xóa vĩnh viễn danh mục tour
     });
 
-    // -------- ALBUMS MANAGEMENT --------
-    Route::prefix('albums')->group(function () {
-        Route::get('/', [AlbumController::class, 'index']); // liệt kê tất cả album
-        Route::post('/', [AlbumController::class, 'store']); // tạo mới album
-        Route::get('/{id}', [AlbumController::class, 'show']); // lấy chi tiết album theo ID
-        Route::put('/{id}', [AlbumController::class, 'update']); // cập nhật album
-        Route::patch('/{id}/soft-delete', [AlbumController::class, 'softDelete']); // xóa mềm album
-        Route::delete('/{id}', [AlbumController::class, 'destroy']); // xóa vĩnh viễn album
-        Route::get('/trashed', [AlbumController::class, 'trashed']); // liệt kê album đã xóa
-        Route::get('/statistics', [AlbumController::class, 'statistics']); // thống kê album
-    });
+     // -------- ALBUMS MANAGEMENT --------
+    Route::get('/albums', [AlbumController::class, 'index']);
+    Route::get('/albums/trashed', [AlbumController::class, 'trashed']);
+    Route::get('/albums/{id}', [AlbumController::class, 'show']);
+    Route::post('/albums', [AlbumController::class, 'store']);
+    Route::put('/albums/{id}', [AlbumController::class, 'update']);
+    Route::post('/albums/{id}/soft-delete', [AlbumController::class, 'softDelete']);
+    Route::delete('/albums/{id}', [AlbumController::class, 'destroy']);
 
-    // -------- ALBUMS IMAGE --------
-    Route::prefix('albums/{albumId}/images')->group(function () {
-        Route::get('/', [AlbumImageController::class, 'index']); // liệt kê tất cả hình ảnh trong album
-        Route::post('/', [AlbumImageController::class, 'store']); // thêm mới hình ảnh vào album
-        Route::get('/{imageId}', [AlbumImageController::class, 'show']); // lấy chi tiết hình ảnh theo ID
-        Route::post('/{imageId}', [AlbumImageController::class, 'update']); // cập nhật caption hình ảnh
-        Route::patch('/{imageId}/soft-delete', [AlbumImageController::class, 'softDelete']); // xóa mềm hình ảnh
-        Route::delete('/{imageId}', [AlbumImageController::class, 'destroy']); // xóa vĩnh viễn hình ảnh
-        Route::get('/trashed', [AlbumImageController::class, 'trashed']); // liệt kê hình ảnh đã xóa
-        Route::get('/statistics', [AlbumImageController::class, 'statistics']); // thống kê hình ảnh
-    });
+    // Album Images
+    Route::get('/albums/{albumId}/images', [AlbumImageController::class, 'index']);
+    Route::get('/albums/{albumId}/images/trashed', [AlbumImageController::class, 'trashed']);
+    Route::post('/albums/{albumId}/images', [AlbumImageController::class, 'store']);
+    Route::post('/albums/{albumId}/images/{imageId}/soft-delete', [AlbumImageController::class, 'softDelete']);
+    Route::delete('/images/{imageId}', [AlbumImageController::class, 'destroy']);
+    Route::get('/albums/images/all', [AlbumImageController::class, 'allImages']);
 
    //-------- DESTINATION-CATEGORIES --------
     Route::prefix('destination-categories')->group(function () {
