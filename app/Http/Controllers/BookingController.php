@@ -11,7 +11,7 @@ class BookingController extends Controller
     // Danh sách đơn đặt còn hoạt động
     public function index()
     {
-        $bookings = Booking::where('is_deleted', 'active')->with('user')->get();
+        $bookings = Booking::get()->all();
         return response()->json($bookings);
     }
 
