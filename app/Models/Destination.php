@@ -11,41 +11,42 @@ class Destination extends Model
 
     protected $table = 'destinations';
     protected $primaryKey = 'destination_id';
-    public $timestamps = false;
 
     protected $fillable = [
         'name',
         'description',
-        'location',
-        'image',
-        'album_id',
+        'area',
+        'img_banner',
         'is_deleted',
-        'highlight' 
     ];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['img_banner_url'];
 
-    // Lấy đúng URL ảnh công khai
-    public function getImageUrlAttribute()
+    /**
+     * Accessor: Trả về URL ảnh banner đầy đủ
+     */
+    public function getImgBannerUrlAttribute()
     {
-        return $this->image ? asset('storage/' . $this->image) : null;
+        return $this->img_banner ? asset('storage/' . $this->img_banner) : null;
     }
 
-    // Scope để lấy destinations nổi bật
-    public function scopeHighlight($query)
-    {
-        return $query->where('highlight', 'yes');
-    }
-
-    // Scope để lấy destinations active
+    /**
+     * Scope: Lọc theo active
+     */
     public function scopeActive($query)
     {
         return $query->where('is_deleted', 'active');
     }
 
-    // Quan hệ: Destination thuộc về Album
-    public function album()
+    /**
+     * Quan hệ: Một điểm đến có nhiều section
+     */
+    public function sections()
     {
-        return $this->belongsTo(Album::class, 'album_id', 'album_id');
+        return $this->hasMany(DestinationSection::class, 'destination_id', 'destination_id');
+    }
+    public function tours()
+    {
+        return $this->belongsToMany(Tour::class, 'tour_destinations', 'destination_id', 'tour_id');
     }
 }

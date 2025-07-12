@@ -12,20 +12,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
-            $table->integer('booking_id', true);
-            $table->integer('user_id')->nullable()->index('user_id');
-            $table->enum('booking_type', ['tour', 'combo', 'hotel', 'transport', 'motorbike', 'guide', 'bus'])->nullable();
-            $table->integer('related_id')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->integer('quantity')->nullable()->default(1);
-            $table->decimal('total_price', 12)->nullable();
-            $table->enum('payment_method', ['COD', 'bank_transfer', 'VNPay', 'MoMo'])->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->nullable()->default('pending');
-            $table->text('cancel_reason')->nullable();
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hoạt động, inactive = không hoạt động (ẩn)');
+            $table->integer('booking_id', true); // Tự động tăng, khóa chính
+            $table->integer('user_id')->index('user_id'); // khớp với users.id
+            $table->integer('tour_id')->nullable()->index('tour_id'); 
+            $table->integer('guide_id')->nullable()->index('guide_id'); 
+            $table->integer('hotel_id')->nullable()->index('hotel_id');
+            $table->integer('bus_route_id')->nullable()->index('bus_route_id');
+            $table->integer('motorbike_id')->nullable()->index('motorbike_id');
+            $table->integer('custom_tour_id')->nullable()->index('custom_tour_id');
 
+            // Thông tin đặt chỗ
+            $table->integer('quantity')->default(1);
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->decimal('total_price', 12, 2);
+
+            // Thông tin thanh toán
+            $table->enum('payment_method', ['COD', 'bank_transfer', 'VNPay', 'MoMo'])->nullable();
+
+            // Trạng thái đơn
+            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->default('pending');
+            $table->text('cancel_reason')->nullable();
+
+            // Xóa mềm
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active');
+
+            $table->timestamps();
         });
     }
 

@@ -10,7 +10,7 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    { 
         Schema::create('payments', function (Blueprint $table) {
             $table->integer('id', true);
             $table->integer('booking_id')->index('booking_id');

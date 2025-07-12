@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('destinations', function (Blueprint $table) {
-            $table->enum('highlight', ['yes', 'no'])->default('no')->comment('yes = nổi bật, no = không nổi bật');
-        });
+        Schema::table('custom_tours', function (Blueprint $table) {
+    if (Schema::hasTable('users')) {
+        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+    }
+});
+
     }
 
     /**
@@ -21,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('destinations', function (Blueprint $table) {
-            $table->dropColumn('highlight');
+        Schema::table('custom_tours', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
         });
     }
 };

@@ -4,106 +4,126 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    // Danh sách đơn đặt còn hoạt động
+    // Lấy danh sách booking active
     public function index()
     {
-        $bookings = Booking::get()->all();
+        $bookings = Booking::with(['user', 'tour', 'guide', 'hotel', 'busRoute', 'motorbike', 'customTour'])
+                        ->where('is_deleted', 'active')
+                        ->get();
+
         return response()->json($bookings);
     }
 
-    // Danh sách đã xóa mềm
-    public function trashed()
-    {
-        $bookings = Booking::where('is_deleted', 'inactive')->with('user')->get();
-        return response()->json($bookings);
-    }
-
-    // Chi tiết booking
+    // Lấy chi tiết theo id
     public function show($id)
     {
-        $booking = Booking::where('is_deleted', 'active')->with('user')->find($id);
-        if (!$booking) return response()->json(['message' => 'Không tìm thấy booking'], 404);
+        $booking = Booking::with(['user', 'tour', 'guide', 'hotel', 'busRoute', 'motorbike', 'customTour'])
+                        ->find($id);
+
+        if (!$booking || $booking->is_deleted === 'inactive') {
+            return response()->json(['message' => 'Booking không tồn tại'], 404);
+        }
+
         return response()->json($booking);
     }
 
-    // Tạo mới booking
+    // Tạo booking mới
     public function store(Request $request)
     {
-        $request->validate([
-            'booking_type' => 'required|in:tour,combo,hotel,transport,motorbike,guide,bus',
-            'related_id' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer|exists:users,id',
+            'tour_id' => 'nullable|integer|exists:tours,tour_id',
+            'custom_tour_id' => 'nullable|integer|exists:custom_tours,custom_tour_id',
+            'guide_id' => 'nullable|integer|exists:guides,guide_id',
+            'hotel_id' => 'nullable|integer|exists:hotels,hotel_id',
+            'bus_route_id' => 'nullable|integer|exists:bus_routes,route_id',
+            'motorbike_id' => 'nullable|integer|exists:motorbikes,bike_id',
             'quantity' => 'required|integer|min:1',
-            'total_price' => 'required|numeric',
-            'payment_method' => 'required|in:COD,bank_transfer,VNPay,MoMo'
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'total_price' => 'required|numeric|min:0',
+            'payment_method' => 'nullable|in:COD,bank_transfer,VNPay,MoMo',
+            'status' => 'nullable|in:pending,confirmed,cancelled,completed',
         ]);
 
-        $booking = Booking::create([
-            'user_id' => Auth::id(),
-            'booking_type' => $request->booking_type,
-            'related_id' => $request->related_id,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'quantity' => $request->quantity,
-            'total_price' => $request->total_price,
-            'payment_method' => $request->payment_method,
-            'status' => 'pending'
-        ]);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Dữ liệu không hợp lệ', 'errors' => $validator->errors()], 422);
+        }
 
-        return response()->json(['message' => 'Tạo đơn đặt thành công', 'booking' => $booking], 201);
+        $booking = Booking::create($request->all());
+
+        return response()->json(['message' => 'Tạo booking thành công', 'booking' => $booking], 201);
     }
 
-    // Cập nhật booking
+    // Cập nhật
     public function update(Request $request, $id)
     {
-        $booking = Booking::where('is_deleted', 'active')->find($id);
-        if (!$booking) return response()->json(['message' => 'Không tìm thấy booking'], 404);
+        $booking = Booking::find($id);
 
-        $request->validate([
-            'start_date' => 'sometimes|date',
-            'end_date' => 'sometimes|date|after_or_equal:start_date',
-            'quantity' => 'sometimes|integer|min:1',
-            'total_price' => 'sometimes|numeric',
-            'status' => 'in:pending,confirmed,cancelled,completed',
-            'cancel_reason' => 'nullable|string',
+        if (!$booking) {
+            return response()->json(['message' => 'Booking không tồn tại'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'tour_id' => 'nullable|integer|exists:tours,tour_id',
+            'custom_tour_id' => 'nullable|integer|exists:custom_tours,custom_tour_id',
+            'guide_id' => 'nullable|integer|exists:guides,guide_id',
+            'hotel_id' => 'nullable|integer|exists:hotels,hotel_id',
+            'bus_route_id' => 'nullable|integer|exists:bus_routes,route_id',
+            'motorbike_id' => 'nullable|integer|exists:motorbikes,bike_id',
+            'quantity' => 'nullable|integer|min:1',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'total_price' => 'nullable|numeric|min:0',
+            'payment_method' => 'nullable|in:COD,bank_transfer,VNPay,MoMo',
+            'status' => 'nullable|in:pending,confirmed,cancelled,completed',
+            'cancel_reason' => 'nullable|string'
         ]);
 
-        $booking->update($request->only([
-            'start_date',
-            'end_date',
-            'quantity',
-            'total_price',
-            'status',
-            'cancel_reason',
-        ]));
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Dữ liệu không hợp lệ', 'errors' => $validator->errors()], 422);
+        }
 
-        return response()->json(['message' => 'Cập nhật thành công', 'booking' => $booking]);
+        $booking->update($request->all());
+
+        return response()->json(['message' => 'Cập nhật booking thành công', 'booking' => $booking]);
     }
 
-    // Xóa mềm / khôi phục booking
+    // Xóa mềm
     public function softDelete($id)
     {
         $booking = Booking::find($id);
-        if (!$booking) return response()->json(['message' => 'Không tìm thấy booking'], 404);
+        if (!$booking) return response()->json(['message' => 'Booking không tồn tại'], 404);
 
         $booking->is_deleted = $booking->is_deleted === 'active' ? 'inactive' : 'active';
         $booking->save();
 
-        return response()->json(['message' => 'Đã chuyển trạng thái đơn đặt thành công', 'booking' => $booking]);
+        return response()->json(['message' => 'Cập nhật trạng thái booking', 'booking' => $booking]);
     }
 
     // Xóa vĩnh viễn
     public function destroy($id)
     {
         $booking = Booking::find($id);
-        if (!$booking) return response()->json(['message' => 'Không tìm thấy booking'], 404);
+        if (!$booking) return response()->json(['message' => 'Booking không tồn tại'], 404);
 
         $booking->delete();
-        return response()->json(['message' => 'Xóa đơn đặt vĩnh viễn thành công']);
+
+        return response()->json(['message' => 'Xóa booking thành công']);
+    }
+
+    // Lấy danh sách booking đã xóa mềm
+    public function trashed()
+    {
+        $trashed = Booking::with(['user', 'tour'])
+                    ->where('is_deleted', 'inactive')
+                    ->get();
+
+        return response()->json($trashed);
     }
 }

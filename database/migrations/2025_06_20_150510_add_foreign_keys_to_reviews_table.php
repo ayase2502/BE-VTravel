@@ -6,25 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('reviews', function (Blueprint $table) {
-            $table->foreign(['user_id'], 'reviews_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['tour_id'], 'reviews_ibfk_2')->references(['tour_id'])->on('tours')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('tour_id')->references('tour_id')->on('tours')->onDelete('set null');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('reviews', function (Blueprint $table) {
-            $table->dropForeign('reviews_ibfk_1');
-            $table->dropForeign('reviews_ibfk_2');
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['tour_id']);
         });
     }
 };

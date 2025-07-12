@@ -20,5 +20,8 @@ class Tour extends Model
     {
         return $this->belongsTo(Album::class, 'album_id', 'album_id');
     }
-    
+   public function destinations()
+    {
+        return $this->belongsToMany(Destination::class, 'tour_destinations', 'tour_id', 'destination_id');
+    }
 }

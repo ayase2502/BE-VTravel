@@ -12,29 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('custom_tour_details', function (Blueprint $table) {
-            $table->foreign(['custom_tour_id'], 'custom_tour_details_ibfk_1')->references(['custom_tour_id'])->on('custom_tour')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['destination_id'], 'custom_tour_details_ibfk_2')->references(['destination_id'])->on('destinations')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['hotel_id'], 'custom_tour_details_ibfk_3')->references(['hotel_id'])->on('hotels')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['transportation_id'], 'custom_tour_details_ibfk_4')->references(['transportation_id'])->on('transportations')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['motorbike_id'], 'custom_tour_details_ibfk_5')->references(['bike_id'])->on('motorbikes')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['guide_id'], 'custom_tour_details_ibfk_6')->references(['guide_id'])->on('guides')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['bus_route_id'], 'custom_tour_details_ibfk_7')->references(['route_id'])->on('bus_routes')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('custom_tour_id')->references('custom_tour_id')->on('custom_tours')->onDelete('cascade');
+            $table->foreign('destination_id')->references('destination_id')->on('destinations')->onDelete('set null');
+            $table->foreign('hotel_id')->references('hotel_id')->on('hotels')->onDelete('set null');
+            $table->foreign('transportation_id')->references('transportation_id')->on('transportations')->onDelete('set null');
+            $table->foreign('motorbike_id')->references('bike_id')->on('motorbikes')->onDelete('set null');
+            $table->foreign('guide_id')->references('guide_id')->on('guides')->onDelete('set null');
+            $table->foreign('bus_route_id')->references('route_id')->on('bus_routes')->onDelete('set null');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('custom_tour_details', function (Blueprint $table) {
-            $table->dropForeign('custom_tour_details_ibfk_1');
-            $table->dropForeign('custom_tour_details_ibfk_2');
-            $table->dropForeign('custom_tour_details_ibfk_3');
-            $table->dropForeign('custom_tour_details_ibfk_4');
-            $table->dropForeign('custom_tour_details_ibfk_5');
-            $table->dropForeign('custom_tour_details_ibfk_6');
-            $table->dropForeign('custom_tour_details_ibfk_7');
+            $table->dropForeign(['custom_tour_id']);
+            $table->dropForeign(['destination_id']);
+            $table->dropForeign(['hotel_id']);
+            $table->dropForeign(['transportation_id']);
+            $table->dropForeign(['motorbike_id']);
+            $table->dropForeign(['guide_id']);
+            $table->dropForeign(['bus_route_id']);
         });
     }
 };

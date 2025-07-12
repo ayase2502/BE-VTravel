@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('custom_tour', function (Blueprint $table) {
-            $table->foreign(['user_id'], 'custom_tour_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
+        Schema::table('custom_tours', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'custom_tours')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('custom_tour', function (Blueprint $table) {
-            $table->dropForeign('custom_tour_ibfk_1');
+        Schema::table('custom_tours', function (Blueprint $table) {
+            $table->dropForeign('custom_tour');
         });
     }
 };
