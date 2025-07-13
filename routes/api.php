@@ -105,7 +105,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Destination Categories
-    Route::apiResource('destination-categories', DestinationCategoryController::class)->only(['store', 'update', 'destroy']);
+    Route::apiResource('destination-categories', DestinationCategoryController::class)->only(['index','store', 'update', 'destroy']);
     Route::post('/destination-categories/{id}/soft-delete', [DestinationCategoryController::class, 'softDelete']);
 
     // Destinations
