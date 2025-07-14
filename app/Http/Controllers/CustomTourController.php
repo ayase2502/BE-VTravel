@@ -12,20 +12,22 @@ use Illuminate\Support\Facades\Validator;
 class AlbumController extends Controller
 {
     public function index()
-    {
-        $albums = Album::where('is_deleted', 'active')
-            ->with(['images' => fn($query) => $query->where('is_deleted', 'active')->take(1)])
-            ->get()
-            ->map(function ($album) {
-                $firstImage = $album->images->first();
-                $album->image_url_full = $firstImage ? asset('storage/' . $firstImage->image_url) : null;
-                $album->images_count = $album->images()->where('is_deleted', 'active')->count();
-                unset($album->images);
-                return $album;
-            });
+{
+    $albums = Album::with('images') // lấy tất cả ảnh của mỗi album
+        ->get()
+        ->map(function ($album) {
+            // Ảnh đầu tiên (dù là active hay inactive)
+            $firstImage = $album->images->first();
+            $album->image_url_full = $firstImage ? asset('storage/' . $firstImage->image_url) : null;
 
-        return response()->json($albums);
-    }
+            // Đếm tổng ảnh (cả active và inactive)
+            $album->images_count = $album->images->count();
+
+            return $album;
+        });
+
+    return response()->json($albums);
+}
 
     public function show($id)
     {

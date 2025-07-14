@@ -21,8 +21,7 @@ class DestinationController extends Controller
 
     public function index()
     {
-        $destinations = Destination::where('is_deleted', 'active')
-            ->with('sections')
+        $destinations = Destination::with('sections') // Lấy tất cả (không lọc is_deleted)
             ->get()
             ->map(function ($dest) {
                 $dest->img_banner_url = $dest->img_banner ? asset('storage/' . $dest->img_banner) : null;
@@ -32,6 +31,7 @@ class DestinationController extends Controller
 
         return response()->json($destinations);
     }
+
 
     public function show($id)
     {

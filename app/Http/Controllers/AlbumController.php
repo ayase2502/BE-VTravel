@@ -13,14 +13,17 @@ class AlbumController extends Controller
 {
     public function index()
     {
-        $albums = Album::with(['images' => fn($query) => $query->where('is_deleted', 'active')->take(1)])
+            $albums = Album::with('images') // Lấy tất cả ảnh của mỗi album
             ->get()
             ->map(function ($album) {
+                // Ảnh đầu tiên (dù active hay inactive)
                 $firstImage = $album->images->first();
                 $album->image_url_full = $firstImage ? asset('storage/' . $firstImage->image_url) : null;
-                $album->images_count = $album->images()->where('is_deleted', 'active')->count();
-                unset($album->images);
-                return $album;
+
+                // Đếm tổng ảnh
+                $album->images_count = $album->images->count();
+
+                return $album; // Trả về cả album và danh sách ảnh
             });
 
         return response()->json($albums);

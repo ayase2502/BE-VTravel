@@ -14,7 +14,7 @@ class TourController extends Controller
     // Danh sách tour
     public function index()
     {
-        $tours = Tour::with(['album.images', 'category', 'destinations'])->where('is_deleted', 'active')->get();
+        $tours = Tour::with(['album.images', 'category', 'destinations'])->get();
         return response()->json($tours);
     }
 
