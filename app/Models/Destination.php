@@ -14,6 +14,8 @@ class Destination extends Model
 
     protected $fillable = [
         'name',
+        'album_id',
+        'category_id',
         'description',
         'area',
         'img_banner',
