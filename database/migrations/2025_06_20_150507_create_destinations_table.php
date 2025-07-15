@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('destinations', function (Blueprint $table) {
+            $table->integer('destination_id',true);
+            $table->unsignedBigInteger('category_id');
+            $table->integer('album_id')->nullable();
+            $table->string('name', 255);
+            $table->text('description')->nullable();
+            $table->string('area', 100)->nullable();
+            $table->string('img_banner')->nullable(); // Đường dẫn ảnh banner lưu trong storage/app/public
+            $table->enum('is_deleted', ['active', 'inactive'])->default('active')->comment('active = hiển thị, inactive = ẩn');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('destinations');
+    }
+};
