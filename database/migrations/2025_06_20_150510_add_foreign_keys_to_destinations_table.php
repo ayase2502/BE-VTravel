@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('destinations', function (Blueprint $table) {
             $table->foreign(['album_id'], 'destinations_ibfk_1')->references(['album_id'])->on('albums')->onUpdate('no action')->onDelete('no action');
+            $table->foreign(['category_id'], 'category_id')->references(['category_id'])->on('destination_categories')->onUpdate('no action')->onDelete('no action');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('destinations', function (Blueprint $table) {
             $table->dropForeign('destinations_ibfk_1');
+            $table->dropForeign('category_id');
         });
     }
 };

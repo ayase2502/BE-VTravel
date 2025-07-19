@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('destinations', function (Blueprint $table) {
             $table->integer('destination_id',true);
+            $table->unsignedBigInteger('category_id');
             $table->integer('album_id')->nullable();
             $table->string('name', 255);
             $table->text('description')->nullable();

@@ -20,7 +20,10 @@ use App\Http\Controllers\{
     GuideController,
     HotelController,
     BusRouteController,
-    MotorbikeController
+    MotorbikeController,
+    ContactController,
+    TransportationController,
+    ComboController
 };
 
 // ================= PUBLIC ROUTES =================
@@ -40,6 +43,13 @@ Route::get('/destinations/{id}', [DestinationController::class, 'show']);
 Route::get('/destinations/highlights', [DestinationController::class, 'highlights']);
 
 Route::get('/reviews/tour/{tourId}', [ReviewController::class, 'getByTour']);
+
+Route::post('/contacts', [ContactController::class, 'store']);
+
+Route::get('/combos', [ComboController::class, 'index']);
+Route::get('/combos/hot', [ComboController::class, 'hotCombos']);
+Route::get('/combos/{id}', [ComboController::class, 'show']);
+
 
 // ================= AUTHENTICATED USER ROUTES =================
 Route::middleware('auth:sanctum')->group(function () {
@@ -175,4 +185,39 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('motorbikes', MotorbikeController::class)->only(['store', 'update', 'destroy']);
     Route::post('/motorbikes/{id}/soft-delete', [MotorbikeController::class, 'softDelete']);
     Route::get('/motorbikes/trashed', [MotorbikeController::class, 'trashed']);
+
+    // Contacts
+    Route::prefix('contacts')->group(function () {
+        Route::get('/', [ContactController::class, 'index']);
+        Route::get('/statistics', [ContactController::class, 'statistics']); 
+        Route::get('/trashed', [ContactController::class, 'trashed']); 
+        Route::get('/{id}', [ContactController::class, 'show']);
+        Route::put('/{id}/status', [ContactController::class, 'updateStatus']);
+        Route::post('/{id}/soft-delete', [ContactController::class, 'softDelete']);
+        Route::post('/{id}/restore', [ContactController::class, 'restore']);
+        Route::delete('/{id}', [ContactController::class, 'destroy']);
+    });
+
+    // Transportations
+    Route::prefix('transportations')->group(function () {
+        Route::post('/', [TransportationController::class, 'store']);
+        Route::get('/statistics', [TransportationController::class, 'statistics']);
+        Route::get('/trashed', [TransportationController::class, 'trashed']);
+        Route::put('/{id}', [TransportationController::class, 'update']);
+        Route::post('/{id}/soft-delete', [TransportationController::class, 'softDelete']);
+        Route::post('/{id}/restore', [TransportationController::class, 'restore']);
+        Route::delete('/{id}', [TransportationController::class, 'destroy']);
+    });
+
+    // Combos
+    Route::get('/combo/statistics', [ComboController::class, 'statistics']);
+    Route::get('/combo/trashed', [ComboController::class, 'trashed']);
+    Route::prefix('combos')->group(function () {
+        Route::post('/', [ComboController::class, 'store']);
+        Route::get('/{id}', [ComboController::class, 'show']);
+        Route::put('/{id}', [ComboController::class, 'update']);
+        Route::post('/{id}/soft-delete', [ComboController::class, 'softDelete']);
+        Route::post('/{id}/restore', [ComboController::class, 'restore']);
+        Route::delete('/{id}', [ComboController::class, 'destroy']);
+    });
 });

@@ -12,9 +12,7 @@ class BookingController extends Controller
     // Lấy danh sách booking active
     public function index()
     {
-        $bookings = Booking::with(['user', 'tour', 'guide', 'hotel', 'busRoute', 'motorbike', 'customTour'])
-                        ->where('is_deleted', 'active')
-                        ->get();
+        $bookings = Booking::with(['user', 'tour', 'guide', 'hotel', 'busRoute', 'motorbike', 'customTour'])->get->all();
 
         return response()->json($bookings);
     }

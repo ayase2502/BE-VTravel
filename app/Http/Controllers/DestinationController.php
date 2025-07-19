@@ -32,6 +32,7 @@ class DestinationController extends Controller
         return response()->json($destinations);
     }
 
+
     public function show($id)
     {
         $destination = Destination::where('is_deleted', 'active')
@@ -52,6 +53,7 @@ class DestinationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'category_id' => 'nullable|numeric',
             'description' => 'nullable|string',
             'area' => 'nullable|string|max:100',
             'imgBanner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -91,10 +93,11 @@ class DestinationController extends Controller
 
         $destination = Destination::create([
             'name' => $request->name,
+            'album_id' => $albumId,
+            'category_id' => $request->category_id,
             'description' => $request->description,
             'area' => $request->area,
             'img_banner' => $imagePath,
-            'album_id' => $albumId,
             'is_deleted' => 'active'
         ]);
 

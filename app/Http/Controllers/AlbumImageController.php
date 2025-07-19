@@ -12,8 +12,7 @@ class AlbumImageController extends Controller
     public function allImages()
     {
         $images = AlbumImage::where('is_deleted', 'active')
-            ->orderBy('image_id', 'desc')
-            ->get()
+            ->get->all()
             ->map(function ($image) {
                 $image->image_url_full = asset('storage/' . $image->image_url);
                 return $image;
